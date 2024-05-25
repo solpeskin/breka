@@ -5,6 +5,7 @@ import { useSignInMutation } from '../services/authService';
 import InputForm from '../components/InputForm';
 import { setUser } from '../features/user/userSlice';
 import { signInSchema } from '../validations/authSchema';
+import { insertSession } from '../presistence';
 
 const LogIn = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -18,19 +19,29 @@ const LogIn = ({ navigation }) => {
   const [triggerSignIn, result] = useSignInMutation();
 
   useEffect(() => {
-    if (result.isSuccess) {
-      dispatch(
-        setUser({
-          email: result.data.email,
-          idToken: result.data.idToken,
-          localId: result.data.localId
-        })
-      );
+    if (result?.data && result.isSuccess) {
+      insertSession({
+        email: result.data.email,
+        localId: result.data.localId,
+        token: result.data.idToken,
+      })
+      .then((response) => {
+        dispatch(
+          setUser({
+            email: result.data.email,
+            idToken: result.data.idToken,
+            localId: result.data.localId,
+          })
+        )
+      })
+      .catch((err) => {
+        console.log(err)
+      })
     } else if (result.isError) {
       handleFirebaseError(result.error.data.error.message);
     }
-  }, [result]);
-
+  }, [result])  
+  
   const handleFirebaseError = (error) => {
     switch (error) {
       case 'INVALID_PASSWORD':
@@ -48,23 +59,8 @@ const LogIn = ({ navigation }) => {
   };
 
   const onSubmit = () => {
-    try {
-      setFirebaseError(""); 
-      const validation = signInSchema.validateSync({ email, password });
-      triggerSignIn({ email, password, returnSecureToken: true });
-    } catch (err) {
-      console.log("Validation Error:", err.path, err.message);
-      switch (err.path) {
-        case "email":
-          setErrorMail(err.message);
-          break;
-        case "password":
-          setErrorPassword(err.message);
-          break;
-        default:
-          break;
-      }
-    }
+    setFirebaseError(""); 
+    triggerSignIn({ email, password, returnSecureToken: true });
   };
 
   const onChange = (setState, value) => {

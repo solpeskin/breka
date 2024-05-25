@@ -5,6 +5,7 @@ import { useSignUpMutation } from '../services/authService';
 import InputForm from '../components/InputForm';
 import { setUser } from '../features/user/userSlice';
 import { signupSchema } from '../validations/authSchema';
+import { insertSession } from '../presistence';
 
 const SignUp = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -20,7 +21,7 @@ const SignUp = ({ navigation }) => {
   const [triggerSignUp, result] = useSignUpMutation();
 
   useEffect(() => {
-    if (result.isSuccess) {
+    if (result.isSuccess) {  
       dispatch(
         setUser({
           email: result.data.email,
@@ -30,7 +31,7 @@ const SignUp = ({ navigation }) => {
       );
     } else if (result.isError) {
       handleFirebaseError(result.error);
-    }
+    } 
   }, [result]);
 
   const handleFirebaseError = (error) => {

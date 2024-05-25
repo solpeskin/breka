@@ -3,23 +3,22 @@ import { StyleSheet, StatusBar, Platform, View } from "react-native";
 import Navigator from "./src/navigation/Navigator";
 import { Provider } from 'react-redux';
 import store from './src/store';
+import { initSQLiteDB } from './src/presistence';
 
-(async ()=> {
+(async() => {
   try {
-      const response = await initSQLiteDB()
-      console.log({responseCreatingDB: response});
-      console.log("DB initialized");
+    const response = await initSQLiteDB();
+    console.log("initilized")
   } catch (error) {
-      console.log({errorCreatingDB: error});
+    console.log("error:" + error);
   }
-})()
-
+})();
 
 const App = () => {
   return (
     <View style={styles.container}>
       <Provider store={store}>
-        <Navigator/>
+        <Navigator />
       </Provider>
     </View>
   );
@@ -30,7 +29,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   }
-})
+});
 
 export default App;
-
