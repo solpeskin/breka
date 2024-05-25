@@ -5,20 +5,27 @@ import { useSelector } from "react-redux"
 
 const Cart = () => {
   const {items: cartItems, total} = useSelector(state => state.cart.value)
-  console.log(total)
-
   const renderItem = ({ item }) => <CartItemCard item={item} />;
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>CART</Text>
-      <FlatList
-        data={cartItems}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id + item.selectedSize}
-        contentContainerStyle={styles.list}
-      />
-      <Text>TOTAL: ${total} ARS</Text>
+      {
+        cartItems.length == 0
+        ? ( <View style={{alignItems:"center", height: "100%", justifyContent: "center"}}><Text>START ADDING PRODUCTS</Text></View>)
+        : (
+          <>
+            <FlatList
+              data={cartItems}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id + item.selectedSize}
+              contentContainerStyle={styles.list}
+            />
+            <Text>TOTAL: ${total} ARS</Text>
+          </>
+        )
+      }
+      
     </View>
   );
 };
@@ -30,8 +37,8 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   header: {
+    paddingTop: 30,
     fontSize: 24,
-    fontWeight: 300,
     marginBottom: 16,
   },
   list: {
