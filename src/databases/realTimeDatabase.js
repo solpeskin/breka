@@ -1,0 +1,1 @@
+export const baseUrl = "https://breka-52bc7-default-rtdb.firebaseio.com/"

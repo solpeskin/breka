@@ -1,11 +1,26 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, StatusBar, Platform, View } from "react-native";
+import Navigator from "./src/navigation/Navigator";
+import { Provider } from 'react-redux';
+import store from './src/store';
 
-export default function App() {
+(async ()=> {
+  try {
+      const response = await initSQLiteDB()
+      console.log({responseCreatingDB: response});
+      console.log("DB initialized");
+  } catch (error) {
+      console.log({errorCreatingDB: error});
+  }
+})()
+
+
+const App = () => {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <Provider store={store}>
+        <Navigator/>
+      </Provider>
     </View>
   );
 }
@@ -13,8 +28,9 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+    marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  }
+})
+
+export default App;
+
