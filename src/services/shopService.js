@@ -47,15 +47,17 @@ export const shopApi = createApi({
         }),
         getProductsCart: builder.query({
             query: (localId) => `productsCart/${localId}.json`,
-            providesTags: ['productsCart']
+            //providesTags: ['productsCart']
         }),
         postProductsCart: builder.mutation({
             query: ({ cartList, localId }) => ({
                 url: `productsCart/${localId}.json`,
                 method: 'PUT',
-                body: cartList,
+                body: {
+                    cartList
+                },
             }),
-            invalidatesTags: ['productsCart'],
+            //invalidatesTags: ['productsCart'],
         }),
     }),
 });

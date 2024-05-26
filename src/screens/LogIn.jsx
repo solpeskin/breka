@@ -77,7 +77,7 @@ const LogIn = ({ navigation }) => {
       <InputForm label={"E-MAIL"} onChange={(value) => onChange(setEmail, value)} error={errorMail} value=""/>
       <InputForm label={"PASSWORD"} onChange={(value) => onChange(setPassword, value)} error={errorPassword} isSecure={true} />
       {firebaseError ? <Text style={styles.errorText}>{firebaseError}</Text> : null}
-      <ButtonBlack onPress={onSubmit} title={"SEND"} width={"80%"}/>
+      <ButtonBlack onPress={onSubmit} title={"SEND"} style={styles.button}/>
       <TouchableOpacity onPress={handleSignUp} style={styles.signUpLink}>
         <Text style={{ fontWeight: 300, fontSize: 11 }}>Don't have an account? Sign Up</Text>
       </TouchableOpacity>
@@ -106,6 +106,10 @@ const styles = StyleSheet.create({
     paddintTop: 2,
     fontSize: 10,
     color: 'red',
+  },
+  button: {
+    width: "80%", 
+    marginTop: 20
   }
 });
 

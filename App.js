@@ -6,12 +6,7 @@ import store from './src/store';
 import { initSQLiteDB } from './src/presistence';
 
 (async() => {
-  try {
-    const response = await initSQLiteDB();
-    console.log("initilized")
-  } catch (error) {
-    console.log("error:" + error);
-  }
+  const response = await initSQLiteDB();
 })();
 
 const App = () => {

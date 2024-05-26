@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import Modal from 'react-native-modal';
 import ButtonBlack from './ButtonBlack';
 
@@ -77,7 +77,7 @@ const ItemsFilter = ({ isVisible, toggleModal, filterState, products, resetFilte
                 </Pressable>
               ))}
             </View>
-            <ButtonBlack style={styles.resetFilters} onPress={resetFilters} title={"RESER FILTERS"} width={110}/>
+            <ButtonBlack style={styles.resetFilters} onPress={resetFilters} title={"RESET FILTERS"} />
           </ScrollView>
         </View>
       </Modal>
@@ -123,7 +123,8 @@ const styles = StyleSheet.create({
   },
   resetFilters: {
     marginHorizontal: 5,
-    marginTop: 20
+    marginTop: 20,
+    width: 110, 
   }
 });
 

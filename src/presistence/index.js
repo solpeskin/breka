@@ -50,7 +50,6 @@ export const getSession = () => {
 }
 
 export const dropSessionsTable = () => {
-    console.log("Will drop table")
     const promise = new Promise((resolve, reject) => {
         db.transaction((tx) => {
             tx.executeSql(
@@ -60,7 +59,6 @@ export const dropSessionsTable = () => {
             )
         })
     })
-    console.log("will return promise")
     return promise
 }
 

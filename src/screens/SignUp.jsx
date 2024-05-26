@@ -61,7 +61,6 @@ const SignUp = ({ navigation }) => {
       const validation = signupSchema.validateSync({ email, password, confirmPassword });
       triggerSignUp({ email, password, returnSecureToken: true });
     } catch (err) {
-      console.log("Validation Error:", err.path, err.message);
       switch (err.path) {
         case "email":
           setErrorMail(err.message);
@@ -97,7 +96,7 @@ const SignUp = ({ navigation }) => {
       <InputForm label={"PASSWORD"} onChange={(value) => onChange(setPassword, value)} error={errorPassword} isSecure={true} />
       <InputForm label={"CONFIRM PASSWORD"} onChange={(value) => onChange(setConfirmPassword, value)} error={errorConfirmPassword} isSecure={true} />
       {firebaseError ? <Text style={styles.errorText}>{firebaseError}</Text> : null}
-      <ButtonBlack onPress={onSubmit} title={"SEND"} width={"80%"}/>
+      <ButtonBlack onPress={onSubmit} title={"SEND"} style={styles.button}/>
       <TouchableOpacity onPress={handleLogIn} style={styles.signUpLink}>
         <Text style={{ fontWeight: 300, fontSize: 11 }}>Have an account? Log Up</Text>
       </TouchableOpacity>
@@ -126,6 +125,10 @@ const styles = StyleSheet.create({
     paddintTop: 2,
     fontSize: 10,
     color: 'red',
+  },
+  button: {
+    width: "80%", 
+    marginTop: 20
   }
 });
 

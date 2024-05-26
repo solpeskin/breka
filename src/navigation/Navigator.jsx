@@ -7,7 +7,8 @@ import { getSession } from '../presistence'
 import { setUser } from '../features/user/userSlice'
 
 const Navigator = () => {
-  const {user} = useSelector(state => state.auth.value)
+  const {user, localId} = useSelector(state => state.auth.value)
+  console.log(localId)
   const dispatch = useDispatch()
 
   useEffect(()=> {

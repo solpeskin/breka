@@ -46,8 +46,12 @@ export const cartSlice = createSlice({
                 updatedAt: new Date().toLocaleString(),
             };
         },
+        setCartItems: (state, {payload}) => {
+            state.value.items = payload
+            state.value.total = payload.reduce((total, item) => total + item.price * item.quantity, 0);
+        }
     },
 });
 
-export const { addCartItem, removeCartItem } = cartSlice.actions;
+export const { addCartItem, removeCartItem, setCartItems } = cartSlice.actions;
 export default cartSlice.reducer;

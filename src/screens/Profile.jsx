@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useGetProfileImageQuery } from '../services/shopService';
 import { clearUser } from '../features/user/userSlice';
 import { truncateSessionsTable } from '../presistence';
+import ButtonBlack from '../components/ButtonBlack';
 
 const Profile = ({navigation}) => {
   const {user} = useSelector(state => state.auth.value)
@@ -16,14 +17,8 @@ const Profile = ({navigation}) => {
   };
 
   const signOut = async () => {
-    try {
-      console.log("try")
-      const response = await truncateSessionsTable()
-      console.log(response);
-      dispatch(clearUser())
-    } catch (error) {
-      console.log({errorSignOutDB: error});
-    }
+    const response = await truncateSessionsTable()
+    dispatch(clearUser())
   }
 
   return (
@@ -49,9 +44,7 @@ const Profile = ({navigation}) => {
           }
           
         </View>
-        <TouchableOpacity style={styles.button} onPress={launchCamera}>
-          <Text style={{color: "white"}}>CHANGE PROFILE PICTURE</Text>
-        </TouchableOpacity>
+        <ButtonBlack  style={styles.button} onPress={launchCamera} title={"CHANGE PROFILE PICTURE"}/>
       </View>
       <TouchableOpacity style={styles.signOut} onPress={signOut}>
         <Text>SIGN OUT</Text>
@@ -83,9 +76,6 @@ const styles = StyleSheet.create({
   button: {
     width: 220,
     height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "black",
     marginTop: 30
   },
   signOut: {

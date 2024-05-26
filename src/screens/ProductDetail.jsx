@@ -1,29 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, Pressable, StyleSheet, Text, View, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
+import { FlatList, Image, Pressable, StyleSheet, Text, View, Dimensions, ScrollView } from 'react-native';
 import Modal from 'react-native-modal';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
-import { useGetProductByIdQuery, useGetProductsCartQuery, usePostProductsCartMutation } from '../services/shopService';
+import { useGetProductByIdQuery, usePostProductsCartMutation } from '../services/shopService';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../components/Loading';
 import { addCartItem } from '../features/cart/cartSlice';
+import ButtonBlack from '../components/ButtonBlack';
 
 const ProductDetail = ({ navigation }) => {
   const dispatch = useDispatch();
   const id = useSelector((state) => state.shop.value.itemIdSelected);
-  const {localId} = useSelector(state => state.auth.value)
-  const {items} = useSelector(state => state.cart.value)
+  const { localId } = useSelector(state => state.auth.value);
+  const items = useSelector(state => state.cart.value.items);
 
   const { data: product, error, isLoading } = useGetProductByIdQuery(id);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
 
-  const [triggerPostProductCart, result] = usePostProductsCartMutation()
+  const [triggerPostProductCart, result] = usePostProductsCartMutation();
 
   const toggleModal = () => {
-    setModalVisible((prev) => {
-      const newState = !prev;
-      return newState;
-    });
+    setModalVisible((prev) => !prev);
   };
 
   useEffect(() => {
@@ -32,16 +30,18 @@ const ProductDetail = ({ navigation }) => {
     }
   }, [isModalVisible]);
 
+  useEffect(() => {
+    triggerPostProductCart({ cartList: items, localId })
+  }, [items]);
+
   const handleSizeSelection = (size) => {
-    console.log("Selected size:", size);
     setSelectedSize(size);
   };
 
   const addToCart = () => {
     if (selectedSize) {
-      const newP = {...product, quantity: 1, selectedSize }
+      const newP = { ...product, quantity: 1, selectedSize };
       dispatch(addCartItem(newP));
-      triggerPostProductCart(items, localId)
       toggleModal();
     }
   };
@@ -120,9 +120,7 @@ const ProductDetail = ({ navigation }) => {
                 );
               })}
             </View>
-            <TouchableOpacity onPress={addToCart} style={styles.addToCartButton}>
-              <Text style={{ color: 'white' }}>ADD TO CART</Text>
-            </TouchableOpacity>
+            <ButtonBlack style={styles.addToCartButton} onPress={addToCart} title={"ADD TO CART"} />
             {!selectedSize && <Text style={styles.error}>*SELECT SIZE</Text>}
           </ScrollView>
         </View>
@@ -235,11 +233,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   addToCartButton: {
-    height: 30,
     width: 110,
-    backgroundColor: 'black',
-    justifyContent: 'center',
-    alignItems: 'center',
     marginHorizontal: 5,
     marginTop: 20,
   },

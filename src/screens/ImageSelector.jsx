@@ -4,6 +4,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useDispatch, useSelector } from 'react-redux';
 import { setCameraImage } from '../features/user/userSlice';
 import { usePostProfileImageMutation } from '../services/shopService';
+import ButtonBlack from '../components/ButtonBlack';
 
 const ImageSelector = ({navigation}) => {
   const [image, setImage] = useState(null)
@@ -17,37 +18,27 @@ const ImageSelector = ({navigation}) => {
   }
 
   const pickImage = async () => {
-    try {
-      const permissionCamera = await verifyCameraPermissions()
-        
-      if (permissionCamera) {
-        let result = await ImagePicker.launchCameraAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.All,
-          allowsEditing: true,
-          aspect: [1, 1],
-          base64: true,
-          quality: 0.2    
-        })
-        if (!result.canceled){
-          const imageURL = `data:image/jpeg;base64,${result.assets[0].base64}`
-          setImage(imageURL)
-        }
+    const permissionCamera = await verifyCameraPermissions()
+      
+    if (permissionCamera) {
+      let result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [1, 1],
+        base64: true,
+        quality: 0.2    
+      })
+      if (!result.canceled){
+        const imageURL = `data:image/jpeg;base64,${result.assets[0].base64}`
+        setImage(imageURL)
       }
-        
-    } catch (error) {
-      console.log(error);
     }
   }
 
   const saveImage = () => {
-    try {
-      dispatch(setCameraImage(image))
-      triggerPostImage({image, localId})
-      navigation.goBack()
-    } catch (error) {
-      console.log(error);
-    }
-    
+    dispatch(setCameraImage(image))
+    triggerPostImage({image, localId})
+    navigation.goBack()
   }
 
   return (
@@ -56,12 +47,8 @@ const ImageSelector = ({navigation}) => {
         ? (
           <View style={{alignItems: "center"}}>
             <Image source={{ uri: image }} style={styles.image} />
-            <TouchableOpacity style={styles.button} onPress={pickImage} >
-              <Text style={{color: "white"}}>TAKE ANOTHER PHOTO</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={saveImage} >
-              <Text style={{color: "white"}}>SAVE</Text>
-            </TouchableOpacity>
+            <ButtonBlack style={styles.button} onPress={pickImage} title={"TAKE ANOTHER PHOTO"}/>
+            <ButtonBlack style={styles.button} onPress={saveImage} title={"SAVE"}/>
           </View>) 
           
         : (
@@ -69,9 +56,7 @@ const ImageSelector = ({navigation}) => {
             <View style={styles.noPhoto}>
               <Text>NO PHOTO TAKEN</Text>
             </View>
-            <TouchableOpacity style={styles.button} onPress={pickImage} >
-              <Text style={{color: "white"}}>TAKE A PHOTO</Text>
-            </TouchableOpacity>
+            <ButtonBlack style={styles.button} onPress={pickImage} title={"TAKE A PHOTO"}/>
           </View>
         )
       }
@@ -100,9 +85,6 @@ const styles = StyleSheet.create({
   button: {
     width: 220,
     height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "black",
     marginTop: 30
   }
 })
