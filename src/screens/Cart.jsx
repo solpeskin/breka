@@ -1,43 +1,16 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import CartItemCard from '../components/CartItemCard'; 
-import { useSelector, useDispatch } from "react-redux";
-import { useGetProductsCartQuery } from '../services/shopService';
-import { setCartItems } from '../features/cart/cartSlice'; 
-import Loading from '../components/Loading';
+import { useSelector } from "react-redux";
 
 const Cart = () => {
-  const dispatch = useDispatch();
-  const { localId } = useSelector(state => state.auth.value);
   const { items, total } = useSelector(state => state.cart.value);
-  const { data: firebaseCartItems, error, isLoading } = useGetProductsCartQuery(localId);
-
-  useEffect(() => {
-    if (firebaseCartItems) {
-      dispatch(setCartItems(firebaseCartItems.cartList));
-      console.log(setCartItems(firebaseCartItems.cartList));
-    }
-  }, [firebaseCartItems, dispatch]);
-
-  const renderItem = ({ item }) => <CartItemCard item={item} />;
-
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Error al cargar el carrito.</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>CART</Text>
       {
-        items.length !== 0 || firebaseCartItems.length !== 0
+        items.length == 0 
         ? (
           <View style={{ alignItems: "center", height: "100%", justifyContent: "center" }}>
             <Text>START ADDING PRODUCTS</Text>
@@ -45,8 +18,8 @@ const Cart = () => {
         ) : (
           <View style={styles.listContainer}>
             <FlatList
-              data={firebaseCartItems ? firebaseCartItems : items}
-              renderItem={renderItem}
+              data={items}
+              renderItem={({ item }) => <CartItemCard item={item} />}
               keyExtractor={(item) => item.id + item.selectedSize}
               contentContainerStyle={styles.list}
               showsVerticalScrollIndicator={false}
@@ -80,7 +53,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   listContainer: {
-    paddingBottom: 130,
+    paddingBottom: 110,
   },
   button: {
     height: 30,

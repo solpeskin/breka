@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, StatusBar, Platform, View } from "react-native";
 import Navigator from "./src/navigation/Navigator";
-import { Provider } from 'react-redux';
+import { Provider} from 'react-redux';
 import store from './src/store';
 import { initSQLiteDB } from './src/presistence';
 

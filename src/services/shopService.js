@@ -47,7 +47,7 @@ export const shopApi = createApi({
         }),
         getProductsCart: builder.query({
             query: (localId) => `productsCart/${localId}.json`,
-            //providesTags: ['productsCart']
+            providesTags: ['productsCart']
         }),
         postProductsCart: builder.mutation({
             query: ({ cartList, localId }) => ({
@@ -57,7 +57,7 @@ export const shopApi = createApi({
                     cartList
                 },
             }),
-            //invalidatesTags: ['productsCart'],
+            invalidatesTags: ['productsCart'],
         }),
     }),
 });
@@ -70,5 +70,6 @@ export const {
     useGetProfileImageQuery,
     usePostProfileImageMutation,
     useGetProductsCartQuery,
-    usePostProductsCartMutation
+    usePostProductsCartMutation,
+    useAddProductToCartMutation
 } = shopApi;

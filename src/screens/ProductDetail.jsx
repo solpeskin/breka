@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, Image, Pressable, StyleSheet, Text, View, Dimensions, ScrollView } from 'react-native';
 import Modal from 'react-native-modal';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
-import { useGetProductByIdQuery, usePostProductsCartMutation } from '../services/shopService';
+import { useGetProductByIdQuery} from '../services/shopService';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../components/Loading';
 import { addCartItem } from '../features/cart/cartSlice';
@@ -11,14 +11,10 @@ import ButtonBlack from '../components/ButtonBlack';
 const ProductDetail = ({ navigation }) => {
   const dispatch = useDispatch();
   const id = useSelector((state) => state.shop.value.itemIdSelected);
-  const { localId } = useSelector(state => state.auth.value);
-  const items = useSelector(state => state.cart.value.items);
 
   const { data: product, error, isLoading } = useGetProductByIdQuery(id);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
-
-  const [triggerPostProductCart, result] = usePostProductsCartMutation();
 
   const toggleModal = () => {
     setModalVisible((prev) => !prev);
@@ -29,15 +25,11 @@ const ProductDetail = ({ navigation }) => {
       setSelectedSize(null);
     }
   }, [isModalVisible]);
-
-  useEffect(() => {
-    triggerPostProductCart({ cartList: items, localId })
-  }, [items]);
-
+  
   const handleSizeSelection = (size) => {
     setSelectedSize(size);
   };
-
+  
   const addToCart = () => {
     if (selectedSize) {
       const newP = { ...product, quantity: 1, selectedSize };
