@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
+import ButtonBlack from './ButtonBlack';
 
 const ItemsFilter = ({ isVisible, toggleModal, filterState, products, resetFilters }) => {
   const { selectedColors, setSelectedColors, selectedSizes, setSelectedSizes, selectedMaterials, setSelectedMaterials } = filterState;
@@ -76,10 +77,7 @@ const ItemsFilter = ({ isVisible, toggleModal, filterState, products, resetFilte
                 </Pressable>
               ))}
             </View>
-
-            <TouchableOpacity onPress={resetFilters} style={styles.resetFilters}>
-              <Text style={{color: "white"}}>RESET FILTERS</Text>
-            </TouchableOpacity>
+            <ButtonBlack style={styles.resetFilters} onPress={resetFilters} title={"RESER FILTERS"} width={110}/>
           </ScrollView>
         </View>
       </Modal>
@@ -124,11 +122,6 @@ const styles = StyleSheet.create({
     marginVertical: 5
   },
   resetFilters: {
-    height: 30,
-    width: 110,
-    backgroundColor: "black",
-    justifyContent: "center",
-    alignItems: "center",
     marginHorizontal: 5,
     marginTop: 20
   }

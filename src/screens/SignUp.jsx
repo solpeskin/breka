@@ -6,6 +6,7 @@ import InputForm from '../components/InputForm';
 import { setUser } from '../features/user/userSlice';
 import { signupSchema } from '../validations/authSchema';
 import { insertSession } from '../presistence';
+import ButtonBlack from '../components/ButtonBlack'
 
 const SignUp = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -21,26 +22,30 @@ const SignUp = ({ navigation }) => {
   const [triggerSignUp, result] = useSignUpMutation();
 
   useEffect(() => {
-    if (result.isSuccess) {  
-      dispatch(
-        setUser({
-          email: result.data.email,
-          idToken: result.data.idToken,
-          localId: result.data.localId
-        })
-      );
+    if (result?.data && result.isSuccess) {
+      insertSession({
+        email: result.data.email,
+        localId: result.data.localId,
+        token: result.data.idToken,
+      })
+      .then((response) => {
+        dispatch(
+          setUser({
+            email: result.data.email,
+            idToken: result.data.idToken,
+            localId: result.data.localId,
+          })
+        )
+      })
     } else if (result.isError) {
-      handleFirebaseError(result.error);
-    } 
+      handleFirebaseError(result.error.data.error.message);
+    }
   }, [result]);
 
   const handleFirebaseError = (error) => {
-    switch (error.data.error.message) {
+    switch (error) {
       case 'EMAIL_EXISTS':
         setFirebaseError("The email address is already in use by another account.");
-        break;
-      case 'OPERATION_NOT_ALLOWED':
-        setFirebaseError("Password sign-in is disabled for this project.");
         break;
       case 'TOO_MANY_ATTEMPTS_TRY_LATER':
         setFirebaseError("We have blocked all requests from this device due to unusual activity. Try again later.");
@@ -92,9 +97,7 @@ const SignUp = ({ navigation }) => {
       <InputForm label={"PASSWORD"} onChange={(value) => onChange(setPassword, value)} error={errorPassword} isSecure={true} />
       <InputForm label={"CONFIRM PASSWORD"} onChange={(value) => onChange(setConfirmPassword, value)} error={errorConfirmPassword} isSecure={true} />
       {firebaseError ? <Text style={styles.errorText}>{firebaseError}</Text> : null}
-      <TouchableOpacity style={styles.button} onPress={onSubmit}>
-        <Text style={styles.buttonText}>SIGN UP</Text>
-      </TouchableOpacity>
+      <ButtonBlack onPress={onSubmit} title={"SEND"} width={"80%"}/>
       <TouchableOpacity onPress={handleLogIn} style={styles.signUpLink}>
         <Text style={{ fontWeight: 300, fontSize: 11 }}>Have an account? Log Up</Text>
       </TouchableOpacity>
@@ -114,28 +117,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '300',
     marginBottom: 20,
-  },
-  input: {
-    height: 30,
-    width: '80%',
-    borderWidth: 0,
-    borderBottomWidth: 1.5,
-    marginBottom: 10,
-    fontSize: 11,
-    fontWeight: '300',
-    paddingHorizontal: 5,
-    borderColor: 'black', 
-  },
-  button: {
-    backgroundColor: 'black',
-    width: "80%",
-    paddingVertical: 5,
-    marginTop: 50,
-  },
-  buttonText: {
-    textAlign: 'center',
-    color: 'white',
-    fontSize: 11,
   },
   signUpLink: {
     position: 'absolute',

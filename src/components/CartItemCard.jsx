@@ -51,15 +51,15 @@ const styles = StyleSheet.create({
   },
   itemName: {
     fontSize: 12,
-    fontWeight: 300,
+    fontWeight: "300",
   },
   itemPrice: {
     fontSize: 12,
-    fontWeight: 300,
+    fontWeight: "300",
   },
   itemExtra: {
     fontSize: 12,
-    fontWeight: 300,
+    fontWeight: "300",
     marginTop: 10,
     color: "gray"
   }

@@ -12,41 +12,22 @@ export const cartSlice = createSlice({
     },
     reducers: {
         addCartItem: (state, { payload }) => {
-            const productRepeated = state.value.items.find(
-                (item) => item.id === payload.id
-            )
-            if (productRepeated) {
-                const itemsUpdated = state.value.items.map((item) => {
-                    if (item.id === payload.id) {
-                        item.quantity += payload.quantity
-                        return item
-                    }
-                    return item
-                })
-                const total = itemsUpdated.reduce(
-                    (acc, currentItem) =>
-                        (acc += currentItem.price * currentItem.quantity),
-                    0
-                )
-                state.value = {
-                    ...state.value,
-                    items: itemsUpdated,
-                    total,
-                    updatedAt: new Date().toLocaleString(),
-                }
+            const existingItemIndex = state.value.items.findIndex(
+                (item) => item.id === payload.id && item.selectedSize === payload.selectedSize
+            );
+
+            if (existingItemIndex !== -1) {
+                state.value.items[existingItemIndex].quantity += payload.quantity;
             } else {
-                state.value.items.push(payload)
-                const total = state.value.items.reduce(
-                    (acc, currentItem) =>
-                        (acc += currentItem.price * currentItem.quantity),
-                    0
-                )
-                state.value = {
-                    ...state.value,
-                    total,
-                    updatedAt: new Date().toLocaleString(),
-                }
+                state.value.items.push(payload);
             }
+
+            state.value.total = state.value.items.reduce(
+                (acc, item) => acc + item.price * item.quantity,
+                0
+            );
+
+            state.value.updatedAt = new Date().toLocaleString();
         },
         removeCartItem: (state, { payload }) => {
             const updatedItems = state.value.items.filter(

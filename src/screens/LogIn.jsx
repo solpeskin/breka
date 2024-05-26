@@ -3,8 +3,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useSignInMutation } from '../services/authService';
 import InputForm from '../components/InputForm';
+import ButtonBlack from '../components/ButtonBlack'
 import { setUser } from '../features/user/userSlice';
-import { signInSchema } from '../validations/authSchema';
 import { insertSession } from '../presistence';
 
 const LogIn = ({ navigation }) => {
@@ -33,9 +33,6 @@ const LogIn = ({ navigation }) => {
             localId: result.data.localId,
           })
         )
-      })
-      .catch((err) => {
-        console.log(err)
       })
     } else if (result.isError) {
       handleFirebaseError(result.error.data.error.message);
@@ -77,12 +74,10 @@ const LogIn = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>LOG IN</Text>
-      <InputForm label={"E-MAIL"} onChange={(value) => onChange(setEmail, value)} error={errorMail} />
+      <InputForm label={"E-MAIL"} onChange={(value) => onChange(setEmail, value)} error={errorMail} value=""/>
       <InputForm label={"PASSWORD"} onChange={(value) => onChange(setPassword, value)} error={errorPassword} isSecure={true} />
       {firebaseError ? <Text style={styles.errorText}>{firebaseError}</Text> : null}
-      <TouchableOpacity style={styles.button} onPress={onSubmit}>
-        <Text style={styles.buttonText}>SEND</Text>
-      </TouchableOpacity>
+      <ButtonBlack onPress={onSubmit} title={"SEND"} width={"80%"}/>
       <TouchableOpacity onPress={handleSignUp} style={styles.signUpLink}>
         <Text style={{ fontWeight: 300, fontSize: 11 }}>Don't have an account? Sign Up</Text>
       </TouchableOpacity>
@@ -102,28 +97,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '300',
     marginBottom: 20,
-  },
-  input: {
-    height: 30,
-    width: '80%',
-    borderWidth: 0,
-    borderBottomWidth: 1.5,
-    marginBottom: 10,
-    fontSize: 11,
-    fontWeight: '300',
-    paddingHorizontal: 5,
-    borderColor: 'black',
-  },
-  button: {
-    backgroundColor: 'black',
-    width: '80%',
-    paddingVertical: 5,
-    marginTop: 50,
-  },
-  buttonText: {
-    textAlign: 'center',
-    color: 'white',
-    fontSize: 11,
   },
   signUpLink: {
     position: 'absolute',

@@ -1,36 +1,50 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, Image, Pressable, StyleSheet, Text, View, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
-import { useGetProductByIdQuery } from '../services/shopService';
+import { useGetProductByIdQuery, useGetProductsCartQuery, usePostProductsCartMutation } from '../services/shopService';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../components/Loading';
-import { addCartItem} from '../features/cart/cartSlice';
+import { addCartItem } from '../features/cart/cartSlice';
 
 const ProductDetail = ({ navigation }) => {
-  const dispatch = useDispatch()
-  const id = useSelector(state => state.shop.value.itemIdSelected);
+  const dispatch = useDispatch();
+  const id = useSelector((state) => state.shop.value.itemIdSelected);
+  const {localId} = useSelector(state => state.auth.value)
+  const {items} = useSelector(state => state.cart.value)
+
   const { data: product, error, isLoading } = useGetProductByIdQuery(id);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
 
+  const [triggerPostProductCart, result] = usePostProductsCartMutation()
+
   const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-    if (!isModalVisible) {
-      setSelectedSize(null); 
-    }
+    setModalVisible((prev) => {
+      const newState = !prev;
+      return newState;
+    });
   };
 
+  useEffect(() => {
+    if (!isModalVisible) {
+      setSelectedSize(null);
+    }
+  }, [isModalVisible]);
+
   const handleSizeSelection = (size) => {
+    console.log("Selected size:", size);
     setSelectedSize(size);
   };
 
   const addToCart = () => {
-    if (selectedSize){
-      dispatch(addCartItem({...product, quantity: 1, selectedSize: selectedSize}))
-      toggleModal()
-    } 
-  }
+    if (selectedSize) {
+      const newP = {...product, quantity: 1, selectedSize }
+      dispatch(addCartItem(newP));
+      triggerPostProductCart(items, localId)
+      toggleModal();
+    }
+  };
 
   if (isLoading) {
     return <Loading />;
@@ -96,20 +110,17 @@ const ProductDetail = ({ navigation }) => {
                     onPress={() => stock > 0 && handleSizeSelection(size)}
                     style={[
                       styles.eachBox,
-                      {width: 30, backgroundColor: 'white', borderColor: stock === 0 ? "gray" : "black" },
+                      { width: 30, backgroundColor: 'white', borderColor: stock === 0 ? 'gray' : 'black' },
                       selectedSize === size && { backgroundColor: 'black' },
                     ]}
                     disabled={stock === 0}
                   >
-                    <Text style={[selectedSize === size ? { color: 'white' } : { color: 'black' }, stock === 0 && { color: "gray" }]}>{size}</Text>
+                    <Text style={[selectedSize === size ? { color: 'white' } : { color: 'black' }, stock === 0 && { color: 'gray' }]}>{size}</Text>
                   </Pressable>
                 );
               })}
             </View>
-            <TouchableOpacity
-              onPress={addToCart}
-              style={styles.addToCartButton}
-            >
+            <TouchableOpacity onPress={addToCart} style={styles.addToCartButton}>
               <Text style={{ color: 'white' }}>ADD TO CART</Text>
             </TouchableOpacity>
             {!selectedSize && <Text style={styles.error}>*SELECT SIZE</Text>}
@@ -124,7 +135,7 @@ const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    width: '100%',
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -201,7 +212,7 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   contentContainer: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     padding: 16,
     height: '30%',
     borderTopWidth: 0.5,
@@ -213,29 +224,29 @@ const styles = StyleSheet.create({
   eachContainer: {
     flexDirection: 'row',
     marginTop: 10,
-    flexWrap: "wrap",
+    flexWrap: 'wrap',
   },
   eachBox: {
     height: 30,
     marginHorizontal: 5,
     borderWidth: 0.4,
-    justifyContent: "center",
-    alignItems: "center",
-    marginVertical: 5
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 5,
   },
   addToCartButton: {
     height: 30,
     width: 110,
-    backgroundColor: "black",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginHorizontal: 5,
-    marginTop: 20
+    marginTop: 20,
   },
   error: {
     fontSize: 10,
-    margin: 5
-  }
+    margin: 5,
+  },
 });
 
 export default ProductDetail;
