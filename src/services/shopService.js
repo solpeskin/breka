@@ -4,7 +4,7 @@ import { baseUrl } from "../databases/realTimeDatabase";
 export const shopApi = createApi({
     reducerPath: "shopApi",
     baseQuery: fetchBaseQuery({ baseUrl: baseUrl }),
-    tagTypes: ['profileImageGet', 'productsCart'], // Etiquetas consistentes
+    tagTypes: ['profileImageGet', 'productsCart', 'savedProducts'], // Etiquetas consistentes
     endpoints: (builder) => ({
         getCategories: builder.query({
             query: () => `categories.json`
@@ -59,6 +59,20 @@ export const shopApi = createApi({
             }),
             invalidatesTags: ['productsCart'],
         }),
+        getSavedProducts: builder.query({
+            query: (localId) => `savedProducts/${localId}.json`,
+            providesTags: ['savedProducts']
+        }),
+        postSavedProducts: builder.mutation({
+            query: ({ savedProducts, localId }) => ({
+                url: `savedProducts/${localId}.json`,
+                method: 'PUT',
+                body: {
+                    savedProducts
+                },
+            }),
+            invalidatesTags: ['savedProducts'],
+        }),
     }),
 });
 
@@ -71,5 +85,6 @@ export const {
     usePostProfileImageMutation,
     useGetProductsCartQuery,
     usePostProductsCartMutation,
-    useAddProductToCartMutation
+    useGetSavedProductsQuery,
+    usePostSavedProductsMutation
 } = shopApi;

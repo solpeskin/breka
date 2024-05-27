@@ -23,7 +23,10 @@ const Categories = ({ navigation }) => {
 
   const handleNavigate = (category) => {
     dispatch(setCategorySelected(category));
-    navigation.navigate('ItemListContainer', { category });
+    navigation.navigate('HomeStack', {
+      screen: 'ItemListContainer',
+      params: { category}
+    });
   };
 
   return (

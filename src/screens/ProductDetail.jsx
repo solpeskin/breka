@@ -2,19 +2,28 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, Image, Pressable, StyleSheet, Text, View, Dimensions, ScrollView } from 'react-native';
 import Modal from 'react-native-modal';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
-import { useGetProductByIdQuery} from '../services/shopService';
+import { Ionicons } from '@expo/vector-icons';
+
+import { useGetProductByIdQuery, usePostSavedProductsMutation} from '../services/shopService';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../components/Loading';
 import { addCartItem } from '../features/cart/cartSlice';
+import { removeSavedProduct, setSavedProducts } from '../features/shop/shopSlice';
+
 import ButtonBlack from '../components/ButtonBlack';
 
 const ProductDetail = ({ navigation }) => {
   const dispatch = useDispatch();
+  const [triggerPostSavedProducts] = usePostSavedProductsMutation();
+
+  const {localId } = useSelector(state => state.auth.value);
   const id = useSelector((state) => state.shop.value.itemIdSelected);
+  const savedProducts = useSelector((state) => state.shop.value.savedProducts);
 
   const { data: product, error, isLoading } = useGetProductByIdQuery(id);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
+  const [saved, setSaved] = useState(savedProducts.id);
 
   const toggleModal = () => {
     setModalVisible((prev) => !prev);
@@ -25,6 +34,11 @@ const ProductDetail = ({ navigation }) => {
       setSelectedSize(null);
     }
   }, [isModalVisible]);
+
+  useEffect(() => {
+    console.log(savedProducts)
+    triggerPostSavedProducts({savedProducts, localId})
+  }, [savedProducts]);
   
   const handleSizeSelection = (size) => {
     setSelectedSize(size);
@@ -35,6 +49,20 @@ const ProductDetail = ({ navigation }) => {
       const newP = { ...product, quantity: 1, selectedSize };
       dispatch(addCartItem(newP));
       toggleModal();
+    }
+  };
+
+  const saveProduct = () => {
+    setSaved(!saved)
+
+    if (Array.isArray(savedProducts)) {
+      if (savedProducts.includes(id)) {
+        dispatch(removeSavedProduct(id));
+      } else {
+        dispatch(setSavedProducts(id));
+      }
+    } else {
+      dispatch(setSavedProducts(id));
     }
   };
 
@@ -74,8 +102,10 @@ const ProductDetail = ({ navigation }) => {
               <Pressable style={styles.addButton} onPress={toggleModal}>
                 <Text style={styles.buttonText}>ADD</Text>
               </Pressable>
-              <Pressable style={styles.saveButton}>
-                <MaterialIcons name="bookmark-outline" size={15} color="black" />
+              <Pressable style={styles.saveButton} onPress={saveProduct}>
+                {
+                  saved ? <Ionicons name="bookmark" size={15} color="black" />
+                  :<MaterialIcons name="bookmark-outline" size={15} color="black" />}
               </Pressable>
             </View>
           </View>

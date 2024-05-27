@@ -1,20 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import BottomTabNavigator from './BottomTabNavigator';
 import AuthStackNavigator from './AuthStackNavigator';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSession } from '../presistence';
 import { setUser } from '../features/user/userSlice';
-import { useGetProductsCartQuery, usePostProductsCartMutation } from '../services/shopService';
-import { setCartItems } from '../features/cart/cartSlice';
 
 const Navigator = () => {
-  const { user, localId } = useSelector(state => state.auth.value);
-  const { data: firebaseCartItems, isSuccess } = useGetProductsCartQuery(localId);
-  const { items } = useSelector(state => state.cart.value);
-
+  const { user } = useSelector(state => state.auth.value);
   const dispatch = useDispatch();
-  const [triggerPostProductCart] = usePostProductsCartMutation();
 
   useEffect(() => {
     (async () => {
@@ -29,18 +23,6 @@ const Navigator = () => {
       }
     })();
   }, [dispatch]);
-
-  useEffect(() => {
-    if (isSuccess && firebaseCartItems && firebaseCartItems.cartList) {
-      dispatch(setCartItems(firebaseCartItems.cartList));
-    }
-  }, [isSuccess, firebaseCartItems, dispatch]);
-
-  useEffect(() => {
-    if (items.length > 0) {
-      triggerPostProductCart({ cartList: items, localId });
-    }
-  }, [items, triggerPostProductCart, localId]);
 
   return (
     <NavigationContainer>

@@ -5,7 +5,8 @@ export const shopSlice = createSlice({
     initialState: {
         value: {
             categorySelected: "",
-            itemIdSelected: ""
+            itemIdSelected: "",
+            savedProducts: []
         }
     },
     reducers: {
@@ -15,8 +16,17 @@ export const shopSlice = createSlice({
         setItemIdSelected: (state, action) => { 
             state.value.itemIdSelected = action.payload 
         },
+        setSavedProducts: (state, {payload}) => { 
+            state.value.savedProducts.push(payload);
+        },
+        removeSavedProduct: (state, { payload }) => { 
+            state.value.savedProducts = state.value.savedProducts.filter(productId => productId !== payload);
+        },
+        resetSavedProduct: (state) => { 
+            state.value.savedProducts = []
+        },
     }
 })
 
-export const {setCategorySelected, setItemIdSelected} = shopSlice.actions
+export const {setCategorySelected, setItemIdSelected, setSavedProducts, removeSavedProduct, resetSavedProduct} = shopSlice.actions
 export default shopSlice.reducer

@@ -8,7 +8,7 @@ const Cart = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>CART</Text>
+      <Text style={styles.header}>CART ({items.length})</Text>
       {
         items.length == 0 
         ? (

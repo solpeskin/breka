@@ -5,6 +5,8 @@ import { useGetProfileImageQuery } from '../services/shopService';
 import { clearUser } from '../features/user/userSlice';
 import { truncateSessionsTable } from '../presistence';
 import ButtonBlack from '../components/ButtonBlack';
+import { resetSavedProduct } from '../features/shop/shopSlice';
+import { resetCartItems } from '../features/cart/cartSlice';
 
 const Profile = ({navigation}) => {
   const {user} = useSelector(state => state.auth.value)
@@ -19,6 +21,8 @@ const Profile = ({navigation}) => {
   const signOut = async () => {
     const response = await truncateSessionsTable()
     dispatch(clearUser())
+    dispatch(resetSavedProduct())
+    dispatch(resetCartItems())
   }
 
   return (
