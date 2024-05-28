@@ -14,7 +14,7 @@ La intención con la navegación de la App es permitir a los usuarios ver las pr
 La navegaicón de la App implica la navegación tanto a través de categorías como de filtros (color, materiales, etc). Cuenta también con un buscador el cual contemplará tanto el nombre del producto como su descripción.
 
 ## Demo video
-Demostración de la navegación de la app: [Link al video]()
+Demostración de la navegación de la app: [Link al video]("https://youtu.be/Yll7uOyriOc")
 
 ## Tecnologías
 Tecnologías utilizadas en el desarrollo del proyecto:
