@@ -76,14 +76,15 @@ const ProductDetail = ({ navigation }) => {
 
   const handleSaveProduct = () => {
     let newSavedProducts = [];
+    
     if (savedProducts.includes(id)) {
       newSavedProducts = savedProducts.filter(productId => productId !== id);
     } else {
       newSavedProducts = [...savedProducts, id];
     }
-    console.log(newSavedProducts)
-    triggerPostProductCart({savedProducts: newSavedProducts, localId });
+    
     dispatch(setSavedProducts(newSavedProducts));
+    triggerPostSavedProducts({savedProducts: newSavedProducts, localId });
   };  
   
 
