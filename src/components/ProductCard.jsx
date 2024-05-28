@@ -4,8 +4,8 @@ import { useDispatch } from 'react-redux';
 import { setItemIdSelected } from '../features/shop/shopSlice';
 
 const ProductCard = ({ product, navigation }) => {
-  const { name, price, images, id } = product;
-  
+  const {images, name, price, id} = product
+
   const dispatch = useDispatch()
   const handleNavigate = () => {
     dispatch(setItemIdSelected(id))

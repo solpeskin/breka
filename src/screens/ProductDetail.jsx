@@ -4,11 +4,11 @@ import Modal from 'react-native-modal';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 
-import { useGetProductByIdQuery, usePostSavedProductsMutation} from '../services/shopService';
+import { useGetProductByIdQuery, useGetSavedProductsQuery, usePostSavedProductsMutation } from '../services/shopService';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../components/Loading';
 import { addCartItem } from '../features/cart/cartSlice';
-import { removeSavedProduct, setSavedProducts } from '../features/shop/shopSlice';
+import { setSavedProducts } from '../features/shop/shopSlice';
 
 import ButtonBlack from '../components/ButtonBlack';
 
@@ -16,14 +16,16 @@ const ProductDetail = ({ navigation }) => {
   const dispatch = useDispatch();
   const [triggerPostSavedProducts] = usePostSavedProductsMutation();
 
-  const {localId } = useSelector(state => state.auth.value);
+  const { localId } = useSelector(state => state.auth.value);
   const id = useSelector((state) => state.shop.value.itemIdSelected);
   const savedProducts = useSelector((state) => state.shop.value.savedProducts);
 
-  const { data: product, error, isLoading } = useGetProductByIdQuery(id);
+  const { data: product, isLoading } = useGetProductByIdQuery(id);
+  const { data: savedProductsFirebase, isSuccess } = useGetSavedProductsQuery(localId);
+
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
-  const [saved, setSaved] = useState(savedProducts.id);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const toggleModal = () => {
     setModalVisible((prev) => !prev);
@@ -35,15 +37,10 @@ const ProductDetail = ({ navigation }) => {
     }
   }, [isModalVisible]);
 
-  useEffect(() => {
-    console.log(savedProducts)
-    triggerPostSavedProducts({savedProducts, localId})
-  }, [savedProducts]);
-  
   const handleSizeSelection = (size) => {
     setSelectedSize(size);
   };
-  
+
   const addToCart = () => {
     if (selectedSize) {
       const newP = { ...product, quantity: 1, selectedSize };
@@ -52,30 +49,31 @@ const ProductDetail = ({ navigation }) => {
     }
   };
 
-  const saveProduct = () => {
-    setSaved(!saved)
-
-    if (Array.isArray(savedProducts)) {
-      if (savedProducts.includes(id)) {
-        dispatch(removeSavedProduct(id));
-      } else {
-        dispatch(setSavedProducts(id));
-      }
+  const handleSaveProduct = () => {
+    if (savedProducts.includes(id)) {
+      const newP = savedProducts.filter(productId => productId !== id);
+      dispatch(setSavedProducts(newP));
     } else {
-      dispatch(setSavedProducts(id));
+      const newP = [...savedProducts, id];
+      dispatch(setSavedProducts(newP));
     }
   };
 
+  useEffect(() => {
+    if (!isInitialLoad) {
+      triggerPostSavedProducts({ savedProducts, localId });
+    }
+  }, [savedProducts, triggerPostSavedProducts, localId, isInitialLoad]);
+
+  useEffect(() => {
+    if (isSuccess && savedProductsFirebase) {
+      dispatch(setSavedProducts(savedProductsFirebase.savedProducts));
+    }
+    setIsInitialLoad(false);
+  }, [isSuccess, savedProductsFirebase, dispatch]);
+
   if (isLoading) {
     return <Loading />;
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Error al cargar el producto.</Text>
-      </View>
-    );
   }
 
   return (
@@ -102,10 +100,11 @@ const ProductDetail = ({ navigation }) => {
               <Pressable style={styles.addButton} onPress={toggleModal}>
                 <Text style={styles.buttonText}>ADD</Text>
               </Pressable>
-              <Pressable style={styles.saveButton} onPress={saveProduct}>
+              <Pressable style={styles.saveButton} onPress={handleSaveProduct}>
                 {
-                  saved ? <Ionicons name="bookmark" size={15} color="black" />
-                  :<MaterialIcons name="bookmark-outline" size={15} color="black" />}
+                  savedProducts.includes(id) ? <Ionicons name="bookmark" size={15} color="black" />
+                  : <MaterialIcons name="bookmark-outline" size={15} color="black" />
+                }
               </Pressable>
             </View>
           </View>
