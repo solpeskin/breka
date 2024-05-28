@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeStackNavigator from "./HomeStackNavigator";
@@ -8,33 +8,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ProfileStackNavigator from "./ProfileStackNavigator";
 import Favorites from "../screens/Favorites";
-import { setCartItems } from "../features/cart/cartSlice"; 
-import { useGetProductsCartQuery, usePostProductsCartMutation } from "../services/shopService";
-import { useDispatch, useSelector } from "react-redux";
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => {
-    const { localId } = useSelector(state => state.auth.value);
-    const { data: firebaseCartItems, isSuccess } = useGetProductsCartQuery(localId);
-    const { items } = useSelector(state => state.cart.value);
-    const [triggerPostProductCart] = usePostProductsCartMutation();
-    const dispatch = useDispatch();
-    const [isInitialLoad, setIsInitialLoad] = useState(true);
-
-    useEffect(() => {
-        if (isSuccess && firebaseCartItems && firebaseCartItems.cartList) {
-            dispatch(setCartItems(firebaseCartItems.cartList));
-        }
-        setIsInitialLoad(false);
-    }, [isSuccess, firebaseCartItems, dispatch]);
-
-    useEffect(() => {
-        if (!isInitialLoad) {
-            triggerPostProductCart({ cartList: items, localId });
-        }
-    }, [items, triggerPostProductCart, localId, isInitialLoad]);
-
     return (
         <Tab.Navigator
             initialRouteName='HomeStack'

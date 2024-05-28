@@ -9,7 +9,9 @@ BREKA es una App e-commerce. Es una marca de ropa y accesorios de alto nivel.
 ## Información
 Proyecto final del curso React Native (comisión 53285) de CoderHouse
 
-La intención con la navegación de la App es permitir a los usuarios ver las prendas disponibles de la marca y luego agregarlas al carrito, donde tendrán la opción de comprar (simplemente enviará la información a FireBase).
+La intención con la navegación de la App es permitir a los usuarios ver las prendas disponibles de la marca y luego agregarlas al carrito, donde tendrán la opción de comprar (simplemente enviará la información a FireBase). También está la opción de guardar los productos en favoritos.
+
+La navegaicón de la App implica la navegación tanto a través de categorías como de filtros (color, materiales, etc). Cuenta también con un buscador el cual contemplará tanto el nombre del producto como su descripción.
 
 ## Demo video
 Demostración de la navegación de la app: [Link al video]()

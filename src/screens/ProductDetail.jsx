@@ -4,10 +4,10 @@ import Modal from 'react-native-modal';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 
-import { useGetProductByIdQuery, useGetSavedProductsQuery, usePostSavedProductsMutation } from '../services/shopService';
+import { useGetProductByIdQuery, useGetProductsCartQuery, useGetSavedProductsQuery, usePostProductsCartMutation, usePostSavedProductsMutation } from '../services/shopService';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../components/Loading';
-import { addCartItem } from '../features/cart/cartSlice';
+import { addCartItem, setCartItems } from '../features/cart/cartSlice';
 import { setSavedProducts } from '../features/shop/shopSlice';
 
 import ButtonBlack from '../components/ButtonBlack';
@@ -15,17 +15,42 @@ import ButtonBlack from '../components/ButtonBlack';
 const ProductDetail = ({ navigation }) => {
   const dispatch = useDispatch();
   const [triggerPostSavedProducts] = usePostSavedProductsMutation();
+  const [triggerPostProductCart] = usePostProductsCartMutation();
 
   const { localId } = useSelector(state => state.auth.value);
+  const { items } = useSelector(state => state.cart.value);
   const id = useSelector((state) => state.shop.value.itemIdSelected);
   const savedProducts = useSelector((state) => state.shop.value.savedProducts);
 
   const { data: product, isLoading } = useGetProductByIdQuery(id);
   const { data: savedProductsFirebase, isSuccess } = useGetSavedProductsQuery(localId);
+  const { data: firebaseCartItems, isSuccess: success } = useGetProductsCartQuery(localId);
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  //actualizar estado global de items carrito
+  useEffect(() => {
+    if (success && firebaseCartItems && firebaseCartItems.cartList) {
+      dispatch(setCartItems(firebaseCartItems.cartList));
+    }
+  }, [isSuccess, firebaseCartItems]);
+
+  //c/vez que se modifique el carrito, actualizar firebase
+  useEffect(() => {
+    if (!isInitialLoad) {
+      triggerPostProductCart({ cartList: items, localId });
+    }
+  }, [isInitialLoad, items]);
+  
+  // actualizar estado global de savedProducts
+  useEffect(() => {
+    if (isSuccess && savedProductsFirebase) {
+      dispatch(setSavedProducts(savedProductsFirebase.savedProducts));
+    } 
+    setIsInitialLoad(false);
+  }, [isSuccess, savedProductsFirebase]);
 
   const toggleModal = () => {
     setModalVisible((prev) => !prev);
@@ -50,27 +75,17 @@ const ProductDetail = ({ navigation }) => {
   };
 
   const handleSaveProduct = () => {
+    let newSavedProducts = [];
     if (savedProducts.includes(id)) {
-      const newP = savedProducts.filter(productId => productId !== id);
-      dispatch(setSavedProducts(newP));
+      newSavedProducts = savedProducts.filter(productId => productId !== id);
     } else {
-      const newP = [...savedProducts, id];
-      dispatch(setSavedProducts(newP));
+      newSavedProducts = [...savedProducts, id];
     }
-  };
-
-  useEffect(() => {
-    if (!isInitialLoad) {
-      triggerPostSavedProducts({ savedProducts, localId });
-    }
-  }, [savedProducts, triggerPostSavedProducts, localId, isInitialLoad]);
-
-  useEffect(() => {
-    if (isSuccess && savedProductsFirebase) {
-      dispatch(setSavedProducts(savedProductsFirebase.savedProducts));
-    }
-    setIsInitialLoad(false);
-  }, [isSuccess, savedProductsFirebase, dispatch]);
+    console.log(newSavedProducts)
+    triggerPostProductCart({savedProducts: newSavedProducts, localId });
+    dispatch(setSavedProducts(newSavedProducts));
+  };  
+  
 
   if (isLoading) {
     return <Loading />;
