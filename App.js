@@ -12,6 +12,7 @@ import { initSQLiteDB } from './src/presistence';
 const App = () => {
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content"/>
       <Provider store={store}>
         <Navigator />
       </Provider>
