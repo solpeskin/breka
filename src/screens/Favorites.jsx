@@ -49,8 +49,8 @@ const Favorites = ({ navigation }) => {
             contentContainerStyle={styles.flatListContent}
             showsVerticalScrollIndicator={false}
           />
-        : <View>
-            <Text>NO SAVED PRODUCTS FOUND.</Text>
+        : <View style={{ alignItems: "center", height: "100%", justifyContent: "center" }}>
+            <Text>START ADDING PRODUCTS</Text>
           </View>
       }
     </View>
